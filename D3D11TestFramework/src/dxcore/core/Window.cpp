@@ -2,6 +2,9 @@
 #include <iostream>
 
 namespace DXCore {
+
+	Window* Window::m_Instance = nullptr;
+
 	Window::Window(const WindowProps& props)
 	{
 		hInst = GetModuleHandle(nullptr);
@@ -53,6 +56,10 @@ namespace DXCore {
 		}
 		// newly created windows start off as hidden
 		ShowWindow(hWnd, SW_SHOWDEFAULT);
+
+		m_DxCore = std::make_unique<Dx11>(hWnd, props.Width, props.Height);
+
+		m_Instance = this;
 	}
 	Window::~Window()
 	{
@@ -60,6 +67,9 @@ namespace DXCore {
 	}
 	void Window::OnUpdate()
 	{
+		m_DxCore->ClearBuffer(1.0f, 0.0f, 0.0f);
+		m_Scene->OnUpdate();
+		m_DxCore->EndFrame();
 	}
 	void Window::SetVSync(bool enabled)
 	{

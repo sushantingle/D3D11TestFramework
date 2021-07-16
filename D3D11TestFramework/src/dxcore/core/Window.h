@@ -1,9 +1,8 @@
 #pragma once
-#include <string>
-#include <functional>
+#include "../DxCore.h"
 #include "../events/Event.h"
-#include <Windows.h>
-#include <optional>
+#include "Dx11.h"
+#include "Scene.h"
 
 namespace DXCore {
 	struct WindowProps
@@ -47,6 +46,13 @@ namespace DXCore {
 		LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 
 		//inline virtual void* GetNativeWindow() const { return m_Window; }
+		const wrl::ComPtr<ID3D11Device>& GetDxDevice() const { return m_DxCore->GetDevice(); }
+		const wrl::ComPtr<ID3D11DeviceContext>& GetDxContext() const { return m_DxCore->GetContext(); }
+
+		void RegisterScene(std::unique_ptr<Scene> scene) { m_Scene = std::move(scene); }
+
+		static Window* GetInstance() { return m_Instance; }
+
 	private:
 		virtual void Init(const WindowProps& props);
 		virtual void Shutdown();
@@ -65,6 +71,10 @@ namespace DXCore {
 		};
 
 		WindowData m_Data;
+		std::unique_ptr<Dx11> m_DxCore;
+		std::unique_ptr<Scene> m_Scene;
+
+		static Window* m_Instance;
 	};
 
 
